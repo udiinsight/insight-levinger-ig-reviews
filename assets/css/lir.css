@@ -325,9 +325,11 @@
 	place-items: center;
 	padding: clamp(12px, 3vw, 40px);
 	opacity: 0;
+	pointer-events: none;
 	transition: opacity .3s var(--lir-ease);
 }
-.lir__lb.is-open { opacity: 1; }
+.lir__lb[hidden] { display: none; }
+.lir__lb.is-open { opacity: 1; pointer-events: auto; }
 
 .lir__lb-backdrop {
 	position: absolute;

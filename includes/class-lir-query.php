@@ -92,7 +92,7 @@ class LIR_Query {
 			'doctorAvatar' => $doctor ? (string) get_the_post_thumbnail_url( $doctor->ID, 'thumbnail' ) : '',
 			'procedures'   => $proc_list,
 			'quote'        => $quote,
-			'transcript'   => trim( (string) self::field( 'review_transcript', $id ) ),
+			'transcript'   => trim( wp_strip_all_tags( (string) self::field( 'review_transcript', $id ) ) ),
 			'igUrl'        => esc_url_raw( (string) self::field( 'ig_permalink', $id ) ),
 		);
 	}

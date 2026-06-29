@@ -28,6 +28,7 @@
 .lir *::after { box-sizing: border-box; }
 
 .lir button { font-family: inherit; }
+.lir [hidden] { display: none !important; }
 
 .lir :focus-visible {
 	outline: 2px solid var(--lir-accent);

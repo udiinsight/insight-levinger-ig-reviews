@@ -46,6 +46,14 @@ class LIR_Fields {
 						'type'         => 'url',
 						'instructions' => 'אופציונלי — לכפתור השיתוף בלייטבוקס.',
 					),
+					array(
+						'key'          => 'field_lir_igmedia',
+						'label'        => 'מזהה מדיה (Instagram)',
+						'name'         => 'ig_media_id',
+						'type'         => 'text',
+						'instructions' => 'מנוהל אוטומטית ע"י הסנכרון מאינסטגרם — למניעת כפילויות.',
+						'readonly'     => 1,
+					),
 				),
 				'location'    => array(
 					array(
@@ -98,6 +106,41 @@ class LIR_Fields {
 				'menu_order'  => 30,
 				'position'    => 'side',
 				'description' => 'בחירת אייקון לטיפול עבור פיד הווידאו בסגנון אינסטגרם.',
+			)
+		);
+
+		acf_add_local_field_group(
+			array(
+				'key'         => 'group_lir_igtag',
+				'title'       => 'תגית אינסטגרם (Levinger IG Reviews)',
+				'fields'      => array(
+					array(
+						'key'          => 'field_lir_ig_tag',
+						'label'        => 'תגית (hashtag) לסנכרון',
+						'name'         => 'ig_tag',
+						'type'         => 'text',
+						'instructions' => 'התגית המזהה בפוסט באינסטגרם — בלי #. לדוגמה: dr_levinger או smile. משמשת למיפוי אוטומטי של ההמלצה לרופא/לטיפול.',
+					),
+				),
+				'location'    => array(
+					array(
+						array(
+							'param'    => 'post_type',
+							'operator' => '==',
+							'value'    => 'doctor',
+						),
+					),
+					array(
+						array(
+							'param'    => 'post_type',
+							'operator' => '==',
+							'value'    => 'procedure',
+						),
+					),
+				),
+				'menu_order'  => 30,
+				'position'    => 'side',
+				'description' => 'תגית אינסטגרם למיפוי אוטומטי בסנכרון פיד הווידאו.',
 			)
 		);
 	}

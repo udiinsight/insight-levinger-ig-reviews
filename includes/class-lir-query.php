@@ -70,29 +70,33 @@ class LIR_Query {
 		$proc_list = array();
 		foreach ( $procedures as $proc ) {
 			$proc_list[] = array(
-				'name' => get_the_title( $proc ),
+				'name' => html_entity_decode( get_the_title( $proc ), ENT_QUOTES, 'UTF-8' ),
 				'slug' => $proc->post_name,
 			);
 		}
 
 		$poster = get_the_post_thumbnail_url( $id, 'large' );
 
-		$quote = $post->post_excerpt
-			? wp_strip_all_tags( $post->post_excerpt )
-			: wp_trim_words( wp_strip_all_tags( $post->post_content ), 26, '…' );
+		$quote = html_entity_decode(
+			$post->post_excerpt
+				? wp_strip_all_tags( $post->post_excerpt )
+				: wp_trim_words( wp_strip_all_tags( $post->post_content ), 26, '…' ),
+			ENT_QUOTES,
+			'UTF-8'
+		);
 
 		return array(
 			'id'           => $id,
-			'name'         => get_the_title( $post ),
+			'name'         => html_entity_decode( get_the_title( $post ), ENT_QUOTES, 'UTF-8' ),
 			'video'        => esc_url_raw( $video ),
 			'poster'       => $poster ? esc_url_raw( $poster ) : '',
 			'duration'     => trim( (string) self::field( 'review_duration', $id ) ),
-			'doctor'       => $doctor ? get_the_title( $doctor ) : '',
+			'doctor'       => $doctor ? html_entity_decode( get_the_title( $doctor ), ENT_QUOTES, 'UTF-8' ) : '',
 			'doctorSlug'   => $doctor ? $doctor->post_name : '',
 			'doctorAvatar' => $doctor ? (string) get_the_post_thumbnail_url( $doctor->ID, 'thumbnail' ) : '',
 			'procedures'   => $proc_list,
 			'quote'        => $quote,
-			'transcript'   => trim( wp_strip_all_tags( (string) self::field( 'review_transcript', $id ) ) ),
+			'transcript'   => trim( html_entity_decode( wp_strip_all_tags( (string) self::field( 'review_transcript', $id ) ), ENT_QUOTES, 'UTF-8' ) ),
 			'igUrl'        => esc_url_raw( (string) self::field( 'ig_permalink', $id ) ),
 		);
 	}

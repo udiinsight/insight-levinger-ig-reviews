@@ -61,5 +61,44 @@ class LIR_Fields {
 				'description' => 'שדות נוספים עבור פיד וידאו ההמלצות בסגנון אינסטגרם.',
 			)
 		);
+
+		acf_add_local_field_group(
+			array(
+				'key'         => 'group_lir_proc_icon',
+				'title'       => 'אייקון לפיד וידאו (Levinger IG Reviews)',
+				'fields'      => array(
+					array(
+						'key'          => 'field_lir_feed_icon',
+						'label'        => 'אייקון בפילטר',
+						'name'         => 'feed_icon',
+						'type'         => 'select',
+						'instructions' => 'האייקון שמוצג בעיגול הסינון בפיד הווידאו. ריק = אוטומטי לפי שם הטיפול.',
+						'allow_null'   => 1,
+						'ui'           => 1,
+						'choices'      => array(
+							'eye'        => 'עין',
+							'smile'      => 'SMILE / חיוך',
+							'prk'        => 'PRK / לייזר',
+							'lasik'      => 'לאסיק',
+							'lens'       => 'עדשה תוך-עינית',
+							'wavefront'  => 'Wavefront / גלי',
+							'monovision' => 'מונוויז\'ן',
+						),
+					),
+				),
+				'location'    => array(
+					array(
+						array(
+							'param'    => 'post_type',
+							'operator' => '==',
+							'value'    => 'procedure',
+						),
+					),
+				),
+				'menu_order'  => 30,
+				'position'    => 'side',
+				'description' => 'בחירת אייקון לטיפול עבור פיד הווידאו בסגנון אינסטגרם.',
+			)
+		);
 	}
 }

@@ -3,7 +3,7 @@
    ========================================================================== */
 
 .lir {
-	--lir-accent: #1DA69A;
+	--lir-accent: #153b8b;
 	--lir-ink: #072027;
 	--lir-muted: #535353;
 	--lir-line: #ECECEC;
@@ -405,8 +405,8 @@
 	flex: 0 0 auto;
 }
 .lir__reel-idtext { display: flex; flex-direction: column; line-height: 1.25; }
-.lir__reel-name { font-size: 14.5px; font-weight: 700; }
-.lir__reel-doc { font-size: 12px; opacity: .82; }
+.lir__reel-doc { font-size: 14.5px; font-weight: 700; }
+.lir__reel-role { font-size: 11px; opacity: .8; }
 
 .lir__reel-actions {
 	position: absolute;
@@ -491,6 +491,8 @@
 	70% { box-shadow: 0 0 0 7px transparent; }
 	100% { box-shadow: 0 0 0 0 transparent; }
 }
+.lir__reel-patient { margin: 0 0 2px; font-size: 16px; font-weight: 800; text-shadow: 0 1px 12px rgba(0,0,0,.4); }
+.lir__reel-patient:empty { display: none; }
 .lir__reel-caption { margin: 0; font-size: 19px; font-weight: 700; line-height: 1.35; text-shadow: 0 1px 12px rgba(0,0,0,.4); }
 .lir__reel-quote { margin: 0; font-size: 14px; line-height: 1.45; opacity: .82; }
 .lir__reel-quote:empty { display: none; }

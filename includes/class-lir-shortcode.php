@@ -27,9 +27,9 @@ class LIR_Shortcode {
 				'limit'     => -1,
 				'procedure' => '',           // optional pre-filter (procedure slug)
 				'doctor'    => '',           // optional pre-filter (doctor slug)
-				'accent'    => 'teal',       // teal | navy | dark | purple | #hex
-				'cta_url'   => '',           // consultation link for the lightbox CTA
-				'cta_text'  => 'קבעו תור ייעוץ',
+				'accent'    => 'navy',       // teal | navy | dark | purple | #hex
+				'cta_url'   => '',           // optional override link (defaults to each review's doctor page)
+				'cta_text'  => 'לדף הרופא',
 			),
 			$atts,
 			'levinger_ig_reviews'

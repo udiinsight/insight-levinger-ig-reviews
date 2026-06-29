@@ -33,8 +33,8 @@
 		var state = { procedure: 'all', doctor: 'all' };
 
 		entrance(root, grid);
-		initProcedures(root, state, function () { applyFilter(true); });
-		initDoctor(root, state, function () { applyFilter(true); });
+		var procCtl = initProcedures(root, state, function () { if (docCtl) { docCtl.reset(); } applyFilter(true); });
+		var docCtl = initDoctor(root, state, function () { if (procCtl) { procCtl.reset(); } applyFilter(true); });
 		initInitialFilter(root, state);
 		applyFilter(false);
 
@@ -124,25 +124,33 @@
 	/* ---------- procedure chips ---------- */
 	function initProcedures(root, state, onChange) {
 		var btns = toArray(root.querySelectorAll('.lir__proc'));
+		function setActive(btn) {
+			btns.forEach(function (b) {
+				var on = b === btn;
+				b.classList.toggle('is-active', on);
+				b.setAttribute('aria-pressed', on ? 'true' : 'false');
+			});
+		}
 		btns.forEach(function (btn) {
 			btn.addEventListener('click', function () {
-				var val = btn.getAttribute('data-lir-procedure') || 'all';
-				if (state.procedure === val) { return; }
-				state.procedure = val;
-				btns.forEach(function (b) {
-					var on = b === btn;
-					b.classList.toggle('is-active', on);
-					b.setAttribute('aria-pressed', on ? 'true' : 'false');
-				});
+				state.procedure = btn.getAttribute('data-lir-procedure') || 'all';
+				setActive(btn);
 				onChange();
 			});
 		});
+		return {
+			reset: function () {
+				state.procedure = 'all';
+				var allBtn = root.querySelector('.lir__proc[data-lir-procedure="all"]');
+				if (allBtn) { setActive(allBtn); }
+			}
+		};
 	}
 
 	/* ---------- doctor dropdown (accessible listbox) ---------- */
 	function initDoctor(root, state, onChange) {
 		var wrap = root.querySelector('[data-lir-dropdown]');
-		if (!wrap) { return; }
+		if (!wrap) { return { reset: function () {} }; }
 		var btn = wrap.querySelector('.lir__doctor-btn');
 		var menu = wrap.querySelector('.lir__doctor-menu');
 		var label = wrap.querySelector('[data-lir-doctor-label]');
@@ -161,14 +169,18 @@
 		}
 		function outside(e) { if (!wrap.contains(e.target)) { setOpen(false); } }
 
-		function select(opt) {
-			state.doctor = opt.getAttribute('data-lir-doctor') || 'all';
+		function mark(opt) {
 			opts.forEach(function (o) {
 				var on = o === opt;
 				o.classList.toggle('is-selected', on);
 				o.setAttribute('aria-selected', on ? 'true' : 'false');
 			});
-			if (label) { label.textContent = opt.textContent; }
+			if (label && opt) { label.textContent = opt.textContent; }
+		}
+
+		function select(opt) {
+			state.doctor = opt.getAttribute('data-lir-doctor') || 'all';
+			mark(opt);
 			setOpen(false);
 			btn.focus();
 			onChange();
@@ -196,6 +208,13 @@
 			opts[n].tabIndex = 0;
 			opts[n].focus();
 		}
+
+		return {
+			reset: function () {
+				state.doctor = 'all';
+				mark(wrap.querySelector('.lir__doctor-opt[data-lir-doctor="all"]'));
+			}
+		};
 	}
 
 	/* ---------- initial pre-filter from shortcode atts ---------- */
@@ -237,7 +256,7 @@
 		var video = lb.querySelector('.lir__video');
 		var elPill = lb.querySelector('[data-lir-lb-proc]');
 		var elAvatar = lb.querySelector('[data-lir-lb-avatar]');
-		var elName = lb.querySelector('[data-lir-lb-name]');
+		var elPatient = lb.querySelector('[data-lir-lb-patient]');
 		var elDoc = lb.querySelector('[data-lir-lb-doc]');
 		var elCapnote = lb.querySelector('[data-lir-lb-capnote]');
 		var elCaption = lb.querySelector('[data-lir-lb-caption]');
@@ -276,7 +295,7 @@
 			elPill.hidden = !elPill.textContent;
 			if (review.doctorAvatar) { elAvatar.style.backgroundImage = 'url("' + review.doctorAvatar + '")'; elAvatar.hidden = false; }
 			else { elAvatar.style.backgroundImage = ''; elAvatar.hidden = true; }
-			elName.textContent = review.name || '';
+			if (elPatient) { elPatient.textContent = review.name || ''; }
 			elDoc.textContent = review.doctor || '';
 
 			var transcript = (review.transcript || '').trim();
@@ -291,9 +310,10 @@
 				elQuote.textContent = '';
 			}
 
-			if (ctaUrl) {
+			var ctaHref = review.doctorUrl || ctaUrl;
+			if (ctaHref) {
 				cta.hidden = false;
-				cta.href = ctaUrl;
+				cta.href = ctaHref;
 				if (ctaText) { ctaText.textContent = ctaLabel; }
 			} else {
 				cta.hidden = true;

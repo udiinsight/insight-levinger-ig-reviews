@@ -72,6 +72,7 @@ class LIR_Query {
 			$proc_list[] = array(
 				'name' => html_entity_decode( get_the_title( $proc ), ENT_QUOTES, 'UTF-8' ),
 				'slug' => $proc->post_name,
+				'icon' => (string) self::field( 'feed_icon', $proc->ID ),
 			);
 		}
 
@@ -94,6 +95,7 @@ class LIR_Query {
 			'doctor'       => $doctor ? html_entity_decode( get_the_title( $doctor ), ENT_QUOTES, 'UTF-8' ) : '',
 			'doctorSlug'   => $doctor ? $doctor->post_name : '',
 			'doctorAvatar' => $doctor ? (string) get_the_post_thumbnail_url( $doctor->ID, 'thumbnail' ) : '',
+			'doctorUrl'    => $doctor ? get_permalink( $doctor ) : '',
 			'procedures'   => $proc_list,
 			'quote'        => $quote,
 			'transcript'   => trim( html_entity_decode( wp_strip_all_tags( (string) self::field( 'review_transcript', $id ) ), ENT_QUOTES, 'UTF-8' ) ),
@@ -114,7 +116,10 @@ class LIR_Query {
 		foreach ( $reviews as $review ) {
 			foreach ( $review['procedures'] as $proc ) {
 				if ( $proc['slug'] && ! isset( $procedures[ $proc['slug'] ] ) ) {
-					$procedures[ $proc['slug'] ] = $proc['name'];
+					$procedures[ $proc['slug'] ] = array(
+						'name' => $proc['name'],
+						'icon' => isset( $proc['icon'] ) ? $proc['icon'] : '',
+					);
 				}
 			}
 			if ( $review['doctorSlug'] && ! isset( $doctors[ $review['doctorSlug'] ] ) ) {

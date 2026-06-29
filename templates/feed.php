@@ -53,10 +53,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span class="lir__proc-ic"><?php echo lir_icon( 'all' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 					<span class="lir__proc-label">הכל</span>
 				</button>
-				<?php foreach ( $lir_filters['procedures'] as $slug => $name ) : ?>
+				<?php foreach ( $lir_filters['procedures'] as $slug => $proc ) : ?>
 					<button type="button" class="lir__proc" data-lir-procedure="<?php echo esc_attr( $slug ); ?>" aria-pressed="false">
-						<span class="lir__proc-ic"><?php echo lir_procedure_icon( $name, $slug ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
-						<span class="lir__proc-label"><?php echo esc_html( $name ); ?></span>
+						<span class="lir__proc-ic"><?php echo $proc['icon'] ? lir_icon( $proc['icon'] ) : lir_procedure_icon( $proc['name'], $slug ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+						<span class="lir__proc-label"><?php echo esc_html( $proc['name'] ); ?></span>
 					</button>
 				<?php endforeach; ?>
 			</div>
@@ -98,8 +98,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<div class="lir__reel-id">
 						<span class="lir__reel-avatar" data-lir-lb-avatar aria-hidden="true"></span>
 						<span class="lir__reel-idtext">
-							<span class="lir__reel-name" data-lir-lb-name></span>
 							<span class="lir__reel-doc" data-lir-lb-doc></span>
+							<span class="lir__reel-role">הרופא/ה המטפל/ת</span>
 						</span>
 					</div>
 				</div>
@@ -115,6 +115,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</button>
 
 				<div class="lir__reel-bottom">
+					<span class="lir__reel-patient" data-lir-lb-patient></span>
 					<span class="lir__reel-capnote" data-lir-lb-capnote hidden><?php echo lir_icon( 'caption' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> כתוביות חיות</span>
 					<p class="lir__reel-caption" data-lir-lb-caption></p>
 					<p class="lir__reel-quote" data-lir-lb-quote></p>

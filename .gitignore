@@ -7,3 +7,6 @@ Thumbs.db
 # Dependencies / build artifacts (none currently)
 node_modules/
 vendor/
+
+# Local dev preview (not deployed)
+preview.html

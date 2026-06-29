@@ -148,7 +148,7 @@ class LIR_Ingest {
 			array(
 				'status'     => 'created',
 				'id'         => $post_id,
-				'edit'       => get_edit_post_link( $post_id, 'raw' ),
+				'edit'       => admin_url( 'post.php?post=' . $post_id . '&action=edit' ),
 				'doctor'     => (int) $doctor_id,
 				'procedures' => array_values( $procedure_ids ),
 				'matched'    => (bool) ( $doctor_id || $procedure_ids ),
@@ -232,7 +232,7 @@ class LIR_Ingest {
 		if ( ! $to ) {
 			return;
 		}
-		$edit    = get_edit_post_link( $post_id, 'raw' );
+		$edit    = admin_url( 'post.php?post=' . $post_id . '&action=edit' );
 		$matched = ( $doctor_id || $procedure_ids ) ? 'מופתה אוטומטית לרופא/טיפול' : 'ללא מיפוי — נדרשת התאמה ידנית';
 		$subject = 'המלצת וידאו חדשה מאינסטגרם — ממתינה לאישור';
 		$body    = "התקבלה המלצת וידאו חדשה מאינסטגרם ונשמרה כטיוטה.\n\n";

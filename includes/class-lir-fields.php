@@ -144,4 +144,76 @@ class LIR_Fields {
 			)
 		);
 	}
+
+	/**
+	 * Fill `ig_tag` on a newly published doctor/procedure, so the Instagram mapping
+	 * keeps working as the directory grows. Only ever fills a blank — a value typed
+	 * by hand is never overwritten.
+	 */
+	public static function autofill_tag( $post_id, $post ) {
+		if ( wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) ) {
+			return;
+		}
+		if ( 'publish' !== $post->post_status ) {
+			return;
+		}
+
+		// Only Hebrew posts: SMILE and PRK exist as four Polylang translations each,
+		// and tagging every language guarantees duplicate tags.
+		if ( function_exists( 'pll_get_post_language' ) ) {
+			$lang = pll_get_post_language( $post_id );
+			if ( $lang && 'he' !== $lang ) {
+				return;
+			}
+		}
+
+		if ( '' !== (string) get_post_meta( $post_id, 'ig_tag', true ) ) {
+			return;
+		}
+
+		$tag = self::title_to_tag( $post->post_title );
+		if ( '' === $tag ) {
+			return;
+		}
+
+		$base = $tag;
+		for ( $n = 2; $n <= 50 && self::tag_taken( $tag, $post_id ); $n++ ) {
+			$tag = $base . '_' . $n;
+		}
+		if ( self::tag_taken( $tag, $post_id ) ) {
+			return;
+		}
+
+		if ( function_exists( 'update_field' ) ) {
+			update_field( 'ig_tag', $tag, $post_id );
+		} else {
+			update_post_meta( $post_id, 'ig_tag', $tag );
+		}
+	}
+
+	/** Strip the honorific and punctuation, leaving a hashtag-safe Hebrew tag. */
+	public static function title_to_tag( $title ) {
+		$t = trim( (string) $title );
+		$t = preg_replace( '/^\s*(פרופסור|פרופ["\'\x{05F3}\x{05F4}]?|ד["\'\x{05F3}\x{05F4}]?ר|דר|מר|גב["\'\x{05F3}\x{05F4}]?)\s+/u', '', $t );
+		$t = preg_replace( '/["\'\x{05F3}\x{05F4}\x{2018}\x{2019}\x{201C}\x{201D}]/u', '', $t );
+		$t = preg_replace( '/[^\p{L}\p{N}]+/u', '_', $t );
+		$t = preg_replace( '/_+/u', '_', $t );
+		return trim( (string) $t, '_' );
+	}
+
+	/** A tag already used by any other doctor or procedure, in any status. */
+	protected static function tag_taken( $tag, $post_id ) {
+		$found = get_posts(
+			array(
+				'post_type'   => array( 'doctor', 'procedure' ),
+				'post_status' => 'any',
+				'meta_key'    => 'ig_tag',
+				'meta_value'  => $tag,
+				'exclude'     => array( (int) $post_id ),
+				'fields'      => 'ids',
+				'numberposts' => 1,
+			)
+		);
+		return ! empty( $found );
+	}
 }

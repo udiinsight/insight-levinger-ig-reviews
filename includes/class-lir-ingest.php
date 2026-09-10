@@ -20,6 +20,10 @@ class LIR_Ingest {
 	const SECRET_OPTION = 'lir_ingest_secret';
 	const EMAIL_OPTION  = 'lir_ingest_email';
 
+	/** Deliberately unmissable — an ingested review must not be publishable as-is. */
+	const TODO_NAME  = '⚠ למלא שם מטופל';
+	const TODO_QUOTE = '⚠ למלא ציטוט מתוך הסרטון';
+
 	public static function register_routes() {
 		register_rest_route(
 			self::REST_NS,
@@ -98,9 +102,13 @@ class LIR_Ingest {
 			array(
 				'post_type'    => '_reviews',
 				'post_status'  => 'draft',
-				'post_title'   => $patient ? $patient : ( $caption ? wp_trim_words( wp_strip_all_tags( $caption ), 8, '' ) : 'המלצת וידאו' ),
+				// Placeholders, not guesses. Instagram gives us no patient name and no
+				// testimonial quote — only marketing copy — and a plausible-looking wrong
+				// value gets published by accident, which is what the draft step is meant
+				// to prevent. The full caption is kept in post_content for reference.
+				'post_title'   => $patient ? $patient : self::TODO_NAME,
 				'post_content' => $caption,
-				'post_excerpt' => $caption ? wp_trim_words( wp_strip_all_tags( $caption ), 26, '…' ) : '',
+				'post_excerpt' => self::TODO_QUOTE,
 			),
 			true
 		);

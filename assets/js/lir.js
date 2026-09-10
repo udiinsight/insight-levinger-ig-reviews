@@ -27,6 +27,7 @@
 		var grid = root.querySelector('.lir__grid');
 		var cards = toArray(root.querySelectorAll('.lir__card'));
 		var emptyEl = root.querySelector('.lir__empty:not(.lir__empty--initial)');
+		var countEl = root.querySelector('[data-lir-count]');
 		var byIndex = {};
 		reviews.forEach(function (r, i) { byIndex[i] = r; });
 
@@ -98,6 +99,16 @@
 			}
 
 			updateEmpty();
+			updateCount();
+		}
+
+		function updateCount() {
+			if (!countEl) { return; }
+			var total = parseInt(countEl.getAttribute('data-lir-total'), 10) || cards.length;
+			var n = visibleCards().length;
+			countEl.textContent = (n === total)
+				? (countEl.getAttribute('data-lir-all') || String(total))
+				: ('מציג ' + n + ' מתוך ' + total);
 		}
 
 		function updateEmpty() {
@@ -175,7 +186,7 @@
 				o.classList.toggle('is-selected', on);
 				o.setAttribute('aria-selected', on ? 'true' : 'false');
 			});
-			if (label && opt) { label.textContent = opt.textContent; }
+			if (label && opt) { label.textContent = opt.getAttribute('data-lir-label') || opt.textContent; }
 		}
 
 		function select(opt) {
@@ -242,7 +253,7 @@
 					o.classList.toggle('is-selected', on);
 					o.setAttribute('aria-selected', on ? 'true' : 'false');
 				});
-				if (label) { label.textContent = opt.textContent; }
+				if (label) { label.textContent = opt.getAttribute('data-lir-label') || opt.textContent; }
 			}
 		}
 	}

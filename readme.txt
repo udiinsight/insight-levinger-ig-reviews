@@ -4,7 +4,7 @@ Tags: reviews, testimonials, instagram, video, rtl
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.3.1
+Stable tag: 0.4.0
 License: GPLv2 or later
 
 Instagram-style video reviews feed for Dr. Levinger.
@@ -49,6 +49,14 @@ Polylang translations share a slug, so a slug lookup prefers the Hebrew post. Sc
 something that matches nothing shows the empty state rather than the whole feed.
 
 == Changelog ==
+
+= 0.4.0 =
+* Filter bar redesigned: procedure filters and the doctor selector are one family of
+  text pills with per-filter counts, replacing the icon circles with clamped labels.
+  A results line under the bar updates live as filters change. Pills scroll as one
+  row on mobile.
+* Ingested reviews get "⚠ למלא…" placeholders for name and quote instead of caption
+  fragments, so an unfinished draft cannot be published by accident.
 
 = 0.3.0 =
 * `procedure`/`doctor` now filter the query server-side instead of hiding cards in JS,

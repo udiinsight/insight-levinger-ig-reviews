@@ -34,41 +34,65 @@ if ( ! defined( 'ABSPATH' ) ) {
 		// visitor cannot filter away from the page they are on.
 		$lir_show_docs  = empty( $lir_atts['_doctor_id'] ) && count( $lir_filters['doctors'] ) > 1;
 		$lir_show_procs = empty( $lir_atts['_procedure_id'] ) && count( $lir_filters['procedures'] ) > 1;
+
+		// Per-filter counts, so each pill says how many videos sit behind it.
+		$lir_total  = count( $lir_reviews );
+		$lir_pcount = array();
+		$lir_dcount = array();
+		foreach ( $lir_reviews as $lir_r ) {
+			foreach ( $lir_r['procedures'] as $lir_p ) {
+				$lir_pcount[ $lir_p['slug'] ] = ( isset( $lir_pcount[ $lir_p['slug'] ] ) ? $lir_pcount[ $lir_p['slug'] ] : 0 ) + 1;
+			}
+			if ( ! empty( $lir_r['doctorSlug'] ) ) {
+				$lir_dcount[ $lir_r['doctorSlug'] ] = ( isset( $lir_dcount[ $lir_r['doctorSlug'] ] ) ? $lir_dcount[ $lir_r['doctorSlug'] ] : 0 ) + 1;
+			}
+		}
+		$lir_noun = ( 1 === $lir_total ) ? 'סרטון המלצה אחד' : $lir_total . ' סרטוני המלצה';
 		?>
+
 		<?php if ( $lir_show_docs || $lir_show_procs ) : ?>
 		<div class="lir__filters">
-			<?php if ( $lir_show_docs ) : ?>
-				<div class="lir__doctor" data-lir-dropdown>
-					<button type="button" class="lir__doctor-btn" aria-haspopup="listbox" aria-expanded="false">
-						<?php echo lir_icon( 'doctor' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-						<span class="lir__doctor-label" data-lir-doctor-label>כל הרופאים</span>
-						<span class="lir__doctor-caret"><?php echo lir_icon( 'chevron' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
-					</button>
-					<ul class="lir__doctor-menu" role="listbox" tabindex="-1" aria-label="בחירת רופא" hidden>
-						<li class="lir__doctor-opt is-selected" role="option" data-lir-doctor="all" aria-selected="true">כל הרופאים</li>
-						<?php foreach ( $lir_filters['doctors'] as $slug => $name ) : ?>
-							<li class="lir__doctor-opt" role="option" data-lir-doctor="<?php echo esc_attr( $slug ); ?>" aria-selected="false"><?php echo esc_html( $name ); ?></li>
-						<?php endforeach; ?>
-					</ul>
-				</div>
-			<?php endif; ?>
-
 			<?php if ( $lir_show_procs ) : ?>
-			<div class="lir__procs" role="group" aria-label="סינון לפי פרוצדורה">
+			<div class="lir__procs" role="group" aria-label="סינון לפי טיפול">
 				<button type="button" class="lir__proc is-active" data-lir-procedure="all" aria-pressed="true">
-					<span class="lir__proc-ic"><?php echo lir_icon( 'all' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 					<span class="lir__proc-label">הכל</span>
+					<span class="lir__proc-count"><?php echo (int) $lir_total; ?></span>
 				</button>
 				<?php foreach ( $lir_filters['procedures'] as $slug => $proc ) : ?>
 					<button type="button" class="lir__proc" data-lir-procedure="<?php echo esc_attr( $slug ); ?>" aria-pressed="false">
 						<span class="lir__proc-ic"><?php echo $proc['icon'] ? lir_icon( $proc['icon'] ) : lir_procedure_icon( $proc['name'], $slug ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 						<span class="lir__proc-label"><?php echo esc_html( $proc['name'] ); ?></span>
+						<span class="lir__proc-count"><?php echo isset( $lir_pcount[ $slug ] ) ? (int) $lir_pcount[ $slug ] : 0; ?></span>
 					</button>
 				<?php endforeach; ?>
 			</div>
 			<?php endif; ?>
+
+			<?php if ( $lir_show_docs ) : ?>
+			<div class="lir__doctor" data-lir-dropdown>
+				<button type="button" class="lir__doctor-btn" aria-haspopup="listbox" aria-expanded="false">
+					<?php echo lir_icon( 'doctor' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<span class="lir__doctor-label" data-lir-doctor-label>כל הרופאים</span>
+					<span class="lir__doctor-caret"><?php echo lir_icon( 'chevron' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+				</button>
+				<ul class="lir__doctor-menu" role="listbox" tabindex="-1" aria-label="בחירת רופא" hidden>
+					<li class="lir__doctor-opt is-selected" role="option" data-lir-doctor="all" data-lir-label="כל הרופאים" aria-selected="true">
+						<span>כל הרופאים</span>
+						<span class="lir__opt-count"><?php echo (int) $lir_total; ?></span>
+					</li>
+					<?php foreach ( $lir_filters['doctors'] as $slug => $name ) : ?>
+						<li class="lir__doctor-opt" role="option" data-lir-doctor="<?php echo esc_attr( $slug ); ?>" data-lir-label="<?php echo esc_attr( $name ); ?>" aria-selected="false">
+							<span><?php echo esc_html( $name ); ?></span>
+							<span class="lir__opt-count"><?php echo isset( $lir_dcount[ $slug ] ) ? (int) $lir_dcount[ $slug ] : 0; ?></span>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+			<?php endif; ?>
 		</div>
 		<?php endif; ?>
+
+		<p class="lir__count" data-lir-count data-lir-total="<?php echo (int) $lir_total; ?>" data-lir-all="<?php echo esc_attr( $lir_noun ); ?>" aria-live="polite"><?php echo esc_html( $lir_noun ); ?></p>
 
 		<div class="lir__grid" role="list">
 			<?php

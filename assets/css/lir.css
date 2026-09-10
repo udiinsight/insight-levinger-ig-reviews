@@ -10,7 +10,8 @@
 	--lir-bg: #FFFFFF;
 	--lir-tint: #FAFAFA;
 	--lir-tint-2: #F4F4F4;
-	--lir-card-radius: 16px;
+	--lir-chip-bg: #F3F5F9;
+	--lir-card-radius: 18px;
 	--lir-gap: 16px;
 	--lir-ease: cubic-bezier(.22, .61, .36, 1);
 	--lir-accent-soft: color-mix(in srgb, var(--lir-accent) 12%, #fff);
@@ -36,99 +37,92 @@
 	border-radius: 6px;
 }
 
-/* ---------- Filter bar ---------- */
+/* ---------- Filter bar ----------
+   One family of pills: procedure filters and the doctor selector share the same
+   40px metrics, so the toolbar reads as a single control rather than two widgets. */
 .lir__filters {
 	display: flex;
-	align-items: flex-start;
-	gap: 20px;
-	margin-bottom: 28px;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px 16px;
 	flex-wrap: wrap;
+	margin-bottom: 12px;
 }
 
 .lir__procs {
 	display: flex;
+	flex-wrap: wrap;
 	gap: 8px;
-	overflow-x: auto;
-	padding: 4px 2px 10px;
-	flex: 1 1 320px;
-	scrollbar-width: none;
-	-webkit-overflow-scrolling: touch;
-}
-.lir__procs::-webkit-scrollbar { display: none; }
-
-.lir__proc {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 8px;
-	flex: 0 0 auto;
-	width: 78px;
-	padding: 0;
-	background: none;
-	border: 0;
-	cursor: pointer;
-	color: var(--lir-muted);
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 2px 0;
 }
 
-.lir__proc-ic {
-	display: grid;
-	place-items: center;
-	width: 60px;
-	height: 60px;
-	border-radius: 999px;
-	border: 1.5px solid var(--lir-accent-ring);
-	background: var(--lir-accent-soft);
-	color: var(--lir-accent);
-	transition: transform .25s var(--lir-ease), border-color .25s, background .25s, box-shadow .25s;
-}
-.lir__proc-ic svg { width: 26px; height: 26px; }
-
-.lir__proc-label {
-	font-size: 12.5px;
-	font-weight: 500;
-	line-height: 1.15;
-	text-align: center;
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2;
-	overflow: hidden;
-	transition: color .2s, font-weight .2s;
-}
-
-.lir__proc:hover .lir__proc-ic { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(7, 32, 39, .08); }
-
-.lir__proc.is-active { color: var(--lir-ink); }
-.lir__proc.is-active .lir__proc-ic {
-	background: var(--lir-accent);
-	border-color: var(--lir-accent);
-	color: #fff;
-	box-shadow: 0 8px 20px color-mix(in srgb, var(--lir-accent) 30%, transparent);
-}
-.lir__proc.is-active .lir__proc-label { font-weight: 700; }
-
-/* Doctor dropdown */
-.lir__doctor { position: relative; flex: 0 0 auto; padding-top: 4px; }
-
+.lir__proc,
 .lir__doctor-btn {
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
-	height: 44px;
+	height: 40px;
 	padding: 0 14px;
 	background: #fff;
 	border: 1px solid var(--lir-line);
 	border-radius: 999px;
 	color: var(--lir-ink);
 	font-size: 14.5px;
-	font-weight: 500;
+	font-weight: 600;
+	line-height: 1;
+	white-space: nowrap;
 	cursor: pointer;
-	transition: border-color .2s, box-shadow .2s;
+	transition: background .18s, border-color .18s, color .18s, box-shadow .18s, transform .18s var(--lir-ease);
 }
-.lir__doctor-btn:hover { border-color: var(--lir-accent-ring); box-shadow: 0 4px 14px rgba(7,32,39,.06); }
-.lir__doctor-btn svg { width: 18px; height: 18px; }
+.lir__proc:hover,
+.lir__doctor-btn:hover { background: var(--lir-chip-bg); border-color: var(--lir-accent-ring); }
+.lir__proc:active { transform: scale(.98); }
+
+.lir__proc-ic {
+	display: inline-grid;
+	place-items: center;
+	width: 18px;
+	height: 18px;
+	flex: 0 0 auto;
+	color: var(--lir-accent);
+}
+.lir__proc-ic:empty { display: none; }
+.lir__proc-ic svg { width: 17px; height: 17px; }
+
+.lir__proc-count {
+	font-size: 13px;
+	font-weight: 500;
+	opacity: .6;
+	font-variant-numeric: tabular-nums;
+}
+.lir__proc-count::before { content: "·"; margin-inline-end: 6px; }
+
+.lir__proc.is-active {
+	background: var(--lir-accent);
+	border-color: var(--lir-accent);
+	color: #fff;
+	box-shadow: 0 6px 16px color-mix(in srgb, var(--lir-accent) 28%, transparent);
+}
+.lir__proc.is-active .lir__proc-ic { color: #fff; }
+.lir__proc.is-active .lir__proc-count { opacity: .8; }
+
+/* Doctor dropdown */
+.lir__doctor { position: relative; flex: 0 0 auto; }
+.lir__doctor-btn svg { width: 17px; height: 17px; }
 .lir__doctor-btn > svg:first-child { color: var(--lir-accent); }
-.lir__doctor-caret { display: inline-flex; transition: transform .25s var(--lir-ease); }
+.lir__doctor-caret { display: inline-flex; opacity: .6; transition: transform .25s var(--lir-ease); }
+.lir__doctor-btn[aria-expanded="true"] { border-color: var(--lir-accent); }
 .lir__doctor-btn[aria-expanded="true"] .lir__doctor-caret { transform: rotate(180deg); }
+
+/* Results line — updated live as filters change */
+.lir__count {
+	margin: 0 0 22px;
+	font-size: 14px;
+	color: var(--lir-muted);
+	font-variant-numeric: tabular-nums;
+}
 
 .lir__doctor-menu {
 	position: absolute;
@@ -148,6 +142,10 @@
 	animation: lir-pop .18s var(--lir-ease) both;
 }
 .lir__doctor-opt {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 14px;
 	padding: 9px 12px;
 	border-radius: 9px;
 	font-size: 14.5px;
@@ -156,6 +154,8 @@
 }
 .lir__doctor-opt:hover { background: var(--lir-tint-2); }
 .lir__doctor-opt.is-selected { background: var(--lir-accent-soft); color: var(--lir-ink); font-weight: 600; }
+.lir__opt-count { font-size: 12.5px; opacity: .55; font-variant-numeric: tabular-nums; }
+.lir__doctor-opt.is-selected .lir__opt-count { opacity: .8; }
 
 @keyframes lir-pop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 
@@ -164,6 +164,7 @@
 	display: grid;
 	grid-template-columns: repeat(var(--lir-cols, 4), 1fr);
 	gap: var(--lir-gap);
+	align-items: start;
 }
 
 /* ---------- Card ---------- */
@@ -192,6 +193,15 @@
 	transition: transform .4s var(--lir-ease), box-shadow .4s var(--lir-ease);
 }
 .lir__card:hover .lir__media { transform: translateY(-4px); box-shadow: 0 16px 36px rgba(7, 32, 39, .16); }
+/* hairline ring so light posters keep an edge against the white page */
+.lir__media::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	box-shadow: inset 0 0 0 1px rgba(7, 32, 39, .06);
+	pointer-events: none;
+}
 
 .lir__poster {
 	position: absolute;
@@ -274,15 +284,15 @@
 	padding: 14px;
 	color: #fff;
 }
-.lir__name { font-size: 16px; font-weight: 700; line-height: 1.2; }
+.lir__name { font-size: 16.5px; font-weight: 700; line-height: 1.2; text-shadow: 0 1px 10px rgba(0, 0, 0, .35); }
 .lir__pill {
 	align-self: flex-start;
 	padding: 3px 10px;
 	font-size: 11.5px;
 	font-weight: 600;
 	border-radius: 999px;
-	background: rgba(255, 255, 255, .9);
-	color: var(--lir-ink);
+	background: rgba(255, 255, 255, .92);
+	color: var(--lir-accent);
 }
 .lir__doc { font-size: 12.5px; opacity: .85; }
 
@@ -562,9 +572,22 @@ body.lir-lock { overflow: hidden; }
 @media (max-width: 1100px) { .lir__grid { grid-template-columns: repeat(min(var(--lir-cols, 4), 3), 1fr); } }
 @media (max-width: 760px) {
 	.lir__grid { grid-template-columns: repeat(2, 1fr); --lir-gap: 12px; }
-	.lir__filters { gap: 12px; }
-	.lir__proc { width: 70px; }
-	.lir__proc-ic { width: 54px; height: 54px; }
+	/* pills become one swipeable row; the doctor selector sits under it */
+	.lir__filters { flex-direction: column; align-items: stretch; gap: 10px; }
+	.lir__procs {
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		scrollbar-width: none;
+		-webkit-overflow-scrolling: touch;
+		padding: 2px 4px 6px;
+		margin-inline: -4px;
+		-webkit-mask-image: linear-gradient(to right, transparent, #000 18px, #000 calc(100% - 18px), transparent);
+		mask-image: linear-gradient(to right, transparent, #000 18px, #000 calc(100% - 18px), transparent);
+	}
+	.lir__procs::-webkit-scrollbar { display: none; }
+	.lir__proc, .lir__doctor-btn { height: 38px; padding: 0 13px; font-size: 14px; }
+	.lir__doctor { align-self: flex-start; }
+	.lir__count { margin-bottom: 16px; }
 	.lir__lb-arrow { width: 42px; height: 42px; }
 	.lir__reel-actions { bottom: 150px; }
 }

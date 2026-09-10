@@ -11,6 +11,95 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class LIR_Query {
 
+	/** Returned by resolve_related() when a scope was asked for but matches nothing. */
+	const NOT_FOUND = -1;
+
+	/**
+	 * Resolve a `procedure`/`doctor` shortcode value to a post ID.
+	 *
+	 * Accepts "current" (the queried object), a numeric ID, a slug, or — because
+	 * Hebrew slugs are percent-encoded and unusable by hand — the post's `ig_tag`.
+	 *
+	 * @param string $value     Attribute value.
+	 * @param string $post_type 'procedure' or 'doctor'.
+	 * @return int Post ID, 0 when not scoped, or self::NOT_FOUND.
+	 */
+	public static function resolve_related( $value, $post_type ) {
+		$value = trim( (string) $value );
+		if ( '' === $value ) {
+			return 0;
+		}
+
+		if ( 'current' === $value ) {
+			$obj = get_queried_object();
+			return ( $obj instanceof WP_Post && $post_type === $obj->post_type ) ? (int) $obj->ID : self::NOT_FOUND;
+		}
+
+		if ( ctype_digit( $value ) ) {
+			return (int) $value;
+		}
+
+		foreach ( array( $value, sanitize_title( $value ) ) as $name ) {
+			$found = get_posts(
+				array(
+					'post_type'   => $post_type,
+					'post_status' => 'publish',
+					'name'        => $name,
+					'fields'      => 'ids',
+					'numberposts' => -1,
+				)
+			);
+			if ( $found ) {
+				return self::prefer_hebrew( $found );
+			}
+		}
+
+		$found = get_posts(
+			array(
+				'post_type'   => $post_type,
+				'post_status' => 'publish',
+				'meta_key'    => 'ig_tag',
+				'meta_value'  => ltrim( $value, '#' ),
+				'fields'      => 'ids',
+				'numberposts' => -1,
+			)
+		);
+		return $found ? self::prefer_hebrew( $found ) : self::NOT_FOUND;
+	}
+
+	/**
+	 * Polylang translations share a slug — `laser-glasses-removal` exists as he, en and
+	 * ar posts — so a bare slug lookup is ambiguous. Reviews are Hebrew, so prefer that.
+	 *
+	 * @param array $ids Candidate post ids.
+	 * @return int
+	 */
+	protected static function prefer_hebrew( $ids ) {
+		if ( function_exists( 'pll_get_post_language' ) ) {
+			foreach ( $ids as $id ) {
+				if ( 'he' === pll_get_post_language( $id ) ) {
+					return (int) $id;
+				}
+			}
+		}
+		return (int) $ids[0];
+	}
+
+	/**
+	 * Match an ACF relation, which stores either a serialized array of ids or a bare id.
+	 *
+	 * @param string $key Meta key.
+	 * @param int    $id  Related post id.
+	 * @return array
+	 */
+	protected static function relation_clause( $key, $id ) {
+		return array(
+			'relation' => 'OR',
+			array( 'key' => $key, 'value' => '"' . (int) $id . '"', 'compare' => 'LIKE' ),
+			array( 'key' => $key, 'value' => (string) (int) $id, 'compare' => '=' ),
+		);
+	}
+
 	/**
 	 * Fetch video reviews (have a video + a doctor + a procedure) as plain arrays.
 	 *
@@ -18,6 +107,30 @@ class LIR_Query {
 	 * @return array<int,array>
 	 */
 	public static function get_reviews( $atts ) {
+		$procedure = isset( $atts['_procedure_id'] )
+			? (int) $atts['_procedure_id']
+			: self::resolve_related( isset( $atts['procedure'] ) ? $atts['procedure'] : '', 'procedure' );
+		$doctor    = isset( $atts['_doctor_id'] )
+			? (int) $atts['_doctor_id']
+			: self::resolve_related( isset( $atts['doctor'] ) ? $atts['doctor'] : '', 'doctor' );
+
+		// Scoped to something that does not exist — show nothing, never everything.
+		if ( self::NOT_FOUND === $procedure || self::NOT_FOUND === $doctor ) {
+			return array();
+		}
+
+		$meta = array(
+			array( 'key' => 'reviewsvideo', 'value' => '', 'compare' => '!=' ),
+			array( 'key' => 'doctor', 'value' => '', 'compare' => '!=' ),
+			array( 'key' => 'procedure', 'value' => '', 'compare' => '!=' ),
+		);
+		if ( $procedure > 0 ) {
+			$meta[] = self::relation_clause( 'procedure', $procedure );
+		}
+		if ( $doctor > 0 ) {
+			$meta[] = self::relation_clause( 'doctor', $doctor );
+		}
+
 		$args = array(
 			'post_type'              => '_reviews',
 			'post_status'            => 'publish',
@@ -26,11 +139,7 @@ class LIR_Query {
 			'order'                  => 'DESC',
 			'no_found_rows'          => true,
 			'update_post_term_cache' => false,
-			'meta_query'             => array(
-				array( 'key' => 'reviewsvideo', 'value' => '', 'compare' => '!=' ),
-				array( 'key' => 'doctor', 'value' => '', 'compare' => '!=' ),
-				array( 'key' => 'procedure', 'value' => '', 'compare' => '!=' ),
-			),
+			'meta_query'             => $meta,
 		);
 
 		$query = new WP_Query( $args );

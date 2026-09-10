@@ -35,6 +35,11 @@ class LIR_Shortcode {
 			'levinger_ig_reviews'
 		);
 
+		// Resolve the scope once — the query filters on it, the template hides the
+		// matching control so a scoped feed cannot be filtered away from its own page.
+		$atts['_procedure_id'] = LIR_Query::resolve_related( $atts['procedure'], 'procedure' );
+		$atts['_doctor_id']    = LIR_Query::resolve_related( $atts['doctor'], 'doctor' );
+
 		$lir_reviews = LIR_Query::get_reviews( $atts );
 		$lir_filters = LIR_Query::get_filters( $lir_reviews );
 		$lir_atts    = $atts;

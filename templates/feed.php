@@ -18,9 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="lir" id="<?php echo esc_attr( $lir_uid ); ?>" dir="rtl" lang="he"
 	style="--lir-accent: <?php echo esc_attr( $lir_accent ); ?>; --lir-cols: <?php echo (int) $lir_columns; ?>;"
 	data-lir-cta-url="<?php echo esc_url( $lir_atts['cta_url'] ); ?>"
-	data-lir-cta-text="<?php echo esc_attr( $lir_atts['cta_text'] ); ?>"
-	data-lir-init-procedure="<?php echo esc_attr( $lir_atts['procedure'] ); ?>"
-	data-lir-init-doctor="<?php echo esc_attr( $lir_atts['doctor'] ); ?>">
+	data-lir-cta-text="<?php echo esc_attr( $lir_atts['cta_text'] ); ?>">
 
 	<?php if ( empty( $lir_reviews ) ) : ?>
 
@@ -31,8 +29,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<?php else : ?>
 
+		<?php
+		// A feed already scoped to one procedure/doctor hides that control, so the
+		// visitor cannot filter away from the page they are on.
+		$lir_show_docs  = empty( $lir_atts['_doctor_id'] ) && count( $lir_filters['doctors'] ) > 1;
+		$lir_show_procs = empty( $lir_atts['_procedure_id'] ) && count( $lir_filters['procedures'] ) > 1;
+		?>
+		<?php if ( $lir_show_docs || $lir_show_procs ) : ?>
 		<div class="lir__filters">
-			<?php if ( count( $lir_filters['doctors'] ) > 1 ) : ?>
+			<?php if ( $lir_show_docs ) : ?>
 				<div class="lir__doctor" data-lir-dropdown>
 					<button type="button" class="lir__doctor-btn" aria-haspopup="listbox" aria-expanded="false">
 						<?php echo lir_icon( 'doctor' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -48,6 +53,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 			<?php endif; ?>
 
+			<?php if ( $lir_show_procs ) : ?>
 			<div class="lir__procs" role="group" aria-label="סינון לפי פרוצדורה">
 				<button type="button" class="lir__proc is-active" data-lir-procedure="all" aria-pressed="true">
 					<span class="lir__proc-ic"><?php echo lir_icon( 'all' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
@@ -60,7 +66,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</button>
 				<?php endforeach; ?>
 			</div>
+			<?php endif; ?>
 		</div>
+		<?php endif; ?>
 
 		<div class="lir__grid" role="list">
 			<?php

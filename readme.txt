@@ -4,7 +4,7 @@ Tags: reviews, testimonials, instagram, video, rtl
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.5.0
+Stable tag: 0.5.1
 License: GPLv2 or later
 
 Instagram-style video reviews feed for Dr. Levinger.
@@ -49,6 +49,11 @@ Polylang translations share a slug, so a slug lookup prefers the Hebrew post. Sc
 something that matches nothing shows the empty state rather than the whole feed.
 
 == Changelog ==
+
+= 0.5.1 =
+* `review_duration` is filled automatically on ingest. Instagram sends no duration, but
+  media_handle_sideload() has already run getID3 over the file, so the running time is
+  read from the attachment metadata. A duration posted explicitly still wins.
 
 = 0.5.0 =
 * Removed the decorative like / save / share buttons from the lightbox. They toggled a

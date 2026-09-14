@@ -120,6 +120,12 @@ class LIR_Ingest {
 		$video_id = self::sideload( $video_url, 'ig-review-' . $post_id . '.mp4', $post_id );
 		if ( $video_id ) {
 			self::set_field( 'reviewsvideo', $video_id, $post_id );
+			// Instagram sends no duration, but media_handle_sideload() has already run
+			// getID3 over the file, so `0:39` is sitting in the attachment metadata.
+			// Only a value posted explicitly beats it.
+			if ( '' === $duration ) {
+				$duration = self::duration_from_attachment( $video_id );
+			}
 		}
 		if ( $thumb_url ) {
 			$thumb_id = self::sideload( $thumb_url, 'ig-review-' . $post_id . '.jpg', $post_id );
@@ -208,6 +214,24 @@ class LIR_Ingest {
 			)
 		);
 		return $found ? (int) $found[0] : 0;
+	}
+
+	/**
+	 * Read a video attachment's running time as `m:ss`, the format the card pill expects.
+	 *
+	 * @param int $attachment_id Video attachment.
+	 * @return string Empty when the metadata carries no length.
+	 */
+	protected static function duration_from_attachment( $attachment_id ) {
+		$meta = wp_get_attachment_metadata( (int) $attachment_id );
+		if ( ! empty( $meta['length_formatted'] ) ) {
+			return sanitize_text_field( $meta['length_formatted'] );
+		}
+		if ( ! empty( $meta['length'] ) ) {
+			$secs = (int) $meta['length'];
+			return sprintf( '%d:%02d', intdiv( $secs, 60 ), $secs % 60 );
+		}
+		return '';
 	}
 
 	protected static function sideload( $url, $name, $parent ) {

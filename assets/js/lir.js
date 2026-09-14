@@ -272,6 +272,9 @@
 		var elCapnote = lb.querySelector('[data-lir-lb-capnote]');
 		var elCaption = lb.querySelector('[data-lir-lb-caption]');
 		var elQuote = lb.querySelector('[data-lir-lb-quote]');
+		var elCap = lb.querySelector('[data-lir-lb-cap]');
+		var elCapText = lb.querySelector('[data-lir-lb-captext]');
+		var elMore = lb.querySelector('[data-lir-lb-more]');
 		var cta = lb.querySelector('[data-lir-lb-cta]');
 		var ctaText = lb.querySelector('[data-lir-lb-cta-text]');
 		var progress = lb.querySelector('[data-lir-lb-progress]');
@@ -326,6 +329,8 @@
 				elQuote.textContent = '';
 			}
 
+			renderCaption((review.caption || '').trim());
+
 			var ctaHref = review.doctorUrl || ctaUrl;
 			if (ctaHref) {
 				cta.hidden = false;
@@ -340,6 +345,40 @@
 			if (btnNext) { btnNext.hidden = solo; }
 
 			tryPlay();
+		}
+
+		/**
+		 * Instagram caption: clamped to two lines, with "עוד" only when there is
+		 * genuinely more to read. Always reopens collapsed on a new video.
+		 */
+		function renderCaption(text) {
+			if (!elCap) { return; }
+			elCap.hidden = !text;
+			elCap.classList.remove('is-open');
+			if (elMore) {
+				elMore.hidden = true;
+				elMore.setAttribute('aria-expanded', 'false');
+				elMore.textContent = 'עוד';
+			}
+			if (!elCapText) { return; }
+			elCapText.textContent = text;
+			elCapText.scrollTop = 0;
+			if (!text || !elMore) { return; }
+			measureMore(0);
+		}
+
+		/**
+		 * Decide whether "עוד" is needed. The lightbox is still mid-open when render()
+		 * runs, so the text can measure 0 high; retry until it has been laid out rather
+		 * than concluding from a zero that there is nothing to expand.
+		 */
+		function measureMore(tries) {
+			if (!elMore || !elCapText) { return; }
+			if (elCapText.clientHeight === 0 && tries < 12) {
+				window.setTimeout(function () { measureMore(tries + 1); }, 40);
+				return;
+			}
+			elMore.hidden = (elCapText.scrollHeight <= elCapText.clientHeight + 2);
 		}
 
 		/** An <a> with no href is inert and unfocusable — the right fallback for a post with no URL. */
@@ -408,6 +447,15 @@
 		if (btnPrev) { btnPrev.addEventListener('click', function () { go(-1); }); }
 		if (btnNext) { btnNext.addEventListener('click', function () { go(1); }); }
 		if (btnToggle) { btnToggle.addEventListener('click', togglePlay); }
+		if (elMore) {
+			elMore.addEventListener('click', function () {
+				var open = !elCap.classList.contains('is-open');
+				elCap.classList.toggle('is-open', open);
+				elMore.setAttribute('aria-expanded', open ? 'true' : 'false');
+				elMore.textContent = open ? 'פחות' : 'עוד';
+			});
+		}
+
 		video.addEventListener('click', togglePlay);
 		video.addEventListener('play', function () { reel.classList.add('is-playing'); });
 		video.addEventListener('pause', function () { reel.classList.remove('is-playing'); });

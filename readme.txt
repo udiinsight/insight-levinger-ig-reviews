@@ -4,7 +4,7 @@ Tags: reviews, testimonials, instagram, video, rtl
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.5.1
+Stable tag: 0.6.1
 License: GPLv2 or later
 
 Instagram-style video reviews feed for Dr. Levinger.
@@ -49,6 +49,14 @@ Polylang translations share a slug, so a slug lookup prefers the Hebrew post. Sc
 something that matches nothing shows the empty state rather than the whole feed.
 
 == Changelog ==
+
+= 0.6.1 =
+* The Instagram caption is shown under the video, clamped to two lines with an
+  "עוד" / "פחות" expander, the way Instagram presents it. It was stored in
+  post_content all along but never sent to the front end.
+* Hashtags are stripped from the displayed caption: the marker is internal and the
+  doctor/procedure tags already appear as chips above it. Windows line endings are
+  normalised so the clamp counts real lines.
 
 = 0.5.1 =
 * `review_duration` is filled automatically on ingest. Instagram sends no duration, but

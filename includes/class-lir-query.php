@@ -188,6 +188,17 @@ class LIR_Query {
 
 		$poster = get_the_post_thumbnail_url( $id, 'large' );
 
+		// The Instagram caption, shown under the video with an "עוד" expander.
+		// Hashtags are stripped: the marker is internal plumbing, and the doctor and
+		// procedure tags are already on screen as chips above the caption.
+		$caption = wp_strip_all_tags( $post->post_content );
+		$caption = str_replace( array( "\r\n", "\r" ), "\n", $caption );
+		$caption = preg_replace( '/#[\p{L}\p{N}_]+/u', '', $caption );
+		$caption = preg_replace( '/[ \t]+/u', ' ', $caption );
+		$caption = preg_replace( '/ *\n */u', "\n", $caption );
+		$caption = preg_replace( '/\n{3,}/u', "\n\n", $caption );
+		$caption = trim( html_entity_decode( (string) $caption, ENT_QUOTES, 'UTF-8' ) );
+
 		$quote = html_entity_decode(
 			$post->post_excerpt
 				? wp_strip_all_tags( $post->post_excerpt )
@@ -208,6 +219,7 @@ class LIR_Query {
 			'doctorUrl'    => $doctor ? get_permalink( $doctor ) : '',
 			'procedures'   => $proc_list,
 			'quote'        => $quote,
+			'caption'      => $caption,
 			'transcript'   => trim( html_entity_decode( wp_strip_all_tags( (string) self::field( 'review_transcript', $id ) ), ENT_QUOTES, 'UTF-8' ) ),
 			'igUrl'        => esc_url_raw( (string) self::field( 'ig_permalink', $id ) ),
 		);

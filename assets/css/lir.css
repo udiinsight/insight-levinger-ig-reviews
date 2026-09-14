@@ -501,6 +501,47 @@
 .lir__reel-quote { margin: 0; font-size: 14px; line-height: 1.45; opacity: .82; }
 .lir__reel-quote:empty { display: none; }
 
+/* Instagram caption — clamped to two lines, "עוד" expands it in place */
+.lir__reel-cap { width: 100%; }
+.lir__reel-captext {
+	margin: 0;
+	font-size: 13.5px;
+	line-height: 1.5;
+	opacity: .8;
+	white-space: pre-line;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	overflow: hidden;
+	overscroll-behavior: contain;
+}
+.lir__reel-cap.is-open .lir__reel-captext {
+	-webkit-line-clamp: unset;
+	line-clamp: unset;
+	display: block;
+	max-height: min(34vh, 260px);
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, .35) transparent;
+}
+.lir__reel-cap.is-open .lir__reel-captext::-webkit-scrollbar { width: 3px; }
+.lir__reel-cap.is-open .lir__reel-captext::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .35); border-radius: 999px; }
+
+.lir__reel-more {
+	margin-top: 2px;
+	padding: 0;
+	background: none;
+	border: 0;
+	color: #fff;
+	font-size: 13px;
+	font-weight: 700;
+	opacity: .75;
+	cursor: pointer;
+	transition: opacity .2s;
+}
+.lir__reel-more:hover { opacity: 1; text-decoration: underline; text-underline-offset: 2px; }
+
 .lir__reel-cta {
 	margin-top: 6px;
 	display: inline-flex;

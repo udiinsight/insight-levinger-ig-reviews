@@ -146,6 +146,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span class="lir__reel-capnote" data-lir-lb-capnote hidden><?php echo lir_icon( 'caption' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> כתוביות חיות</span>
 					<p class="lir__reel-caption" data-lir-lb-caption></p>
 					<p class="lir__reel-quote" data-lir-lb-quote></p>
+
+					<div class="lir__reel-cap" data-lir-lb-cap hidden>
+						<p class="lir__reel-captext" data-lir-lb-captext></p>
+						<button class="lir__reel-more" type="button" data-lir-lb-more aria-expanded="false" hidden>עוד</button>
+					</div>
 					<a class="lir__reel-cta" data-lir-lb-cta href="#" hidden>
 						<span data-lir-lb-cta-text></span>
 						<?php echo lir_icon( 'arrow-prev' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>

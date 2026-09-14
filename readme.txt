@@ -4,7 +4,7 @@ Tags: reviews, testimonials, instagram, video, rtl
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.4.0
+Stable tag: 0.5.0
 License: GPLv2 or later
 
 Instagram-style video reviews feed for Dr. Levinger.
@@ -49,6 +49,13 @@ Polylang translations share a slug, so a slug lookup prefers the Hebrew post. Sc
 something that matches nothing shows the empty state rather than the whole feed.
 
 == Changelog ==
+
+= 0.5.0 =
+* Removed the decorative like / save / share buttons from the lightbox. They toggled a
+  CSS class and nothing else — no storage, no server call — and reset on every video
+  change, so they promised an action the site never performed.
+* The procedure chip now links to that procedure's page and the doctor chip (avatar and
+  name) to the doctor's page. An `<a>` with no href is left inert when a post has no URL.
 
 = 0.4.0 =
 * Filter bar redesigned: procedure filters and the doctor selector are one family of

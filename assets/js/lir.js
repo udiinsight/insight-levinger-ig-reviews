@@ -279,9 +279,7 @@
 		var btnPrev = lb.querySelector('[data-lir-prev]');
 		var btnNext = lb.querySelector('[data-lir-next]');
 		var btnToggle = lb.querySelector('[data-lir-toggle]');
-		var btnLike = lb.querySelector('[data-lir-like]');
-		var btnSave = lb.querySelector('[data-lir-save]');
-		var btnShare = lb.querySelector('[data-lir-share]');
+		var docLink = lb.querySelector('[data-lir-lb-doclink]');
 
 		var ctaUrl = root.getAttribute('data-lir-cta-url') || '';
 		var ctaLabel = root.getAttribute('data-lir-cta-text') || '';
@@ -302,12 +300,19 @@
 			if (progress) { progress.style.width = '0%'; }
 			reel.classList.remove('is-playing');
 
-			elPill.textContent = (review.procedures && review.procedures[0]) ? review.procedures[0].name : '';
+			var proc = (review.procedures && review.procedures[0]) ? review.procedures[0] : null;
+			elPill.textContent = proc ? proc.name : '';
 			elPill.hidden = !elPill.textContent;
+			setLink(elPill, proc ? proc.url : '');
+
 			if (review.doctorAvatar) { elAvatar.style.backgroundImage = 'url("' + review.doctorAvatar + '")'; elAvatar.hidden = false; }
 			else { elAvatar.style.backgroundImage = ''; elAvatar.hidden = true; }
 			if (elPatient) { elPatient.textContent = review.name || ''; }
 			elDoc.textContent = review.doctor || '';
+			setLink(docLink, review.doctorUrl);
+			if (docLink) {
+				docLink.setAttribute('aria-label', review.doctorUrl ? ('לדף הרופא/ה ' + (review.doctor || '')) : '');
+			}
 
 			var transcript = (review.transcript || '').trim();
 			var quote = (review.quote || '').trim();
@@ -330,14 +335,18 @@
 				cta.hidden = true;
 			}
 
-			if (btnLike) { btnLike.classList.remove('is-on'); btnLike.setAttribute('aria-pressed', 'false'); }
-			if (btnSave) { btnSave.classList.remove('is-on'); btnSave.setAttribute('aria-pressed', 'false'); }
-
 			var solo = list.length <= 1;
 			if (btnPrev) { btnPrev.hidden = solo; }
 			if (btnNext) { btnNext.hidden = solo; }
 
 			tryPlay();
+		}
+
+		/** An <a> with no href is inert and unfocusable — the right fallback for a post with no URL. */
+		function setLink(el, url) {
+			if (!el) { return; }
+			if (url) { el.setAttribute('href', url); }
+			else { el.removeAttribute('href'); }
 		}
 
 		function tryPlay() {
@@ -407,23 +416,6 @@
 			if (progress && video.duration) { progress.style.width = (video.currentTime / video.duration * 100) + '%'; }
 		});
 
-		[btnLike, btnSave].forEach(function (b) {
-			if (!b) { return; }
-			b.addEventListener('click', function () {
-				var on = !b.classList.contains('is-on');
-				b.classList.toggle('is-on', on);
-				b.setAttribute('aria-pressed', on ? 'true' : 'false');
-			});
-		});
-		if (btnShare) {
-			btnShare.addEventListener('click', function () {
-				var review = reviewFor(list[pos]) || {};
-				var url = review.igUrl || window.location.href;
-				if (navigator.share) { navigator.share({ title: review.name || document.title, url: url }).catch(function () {}); }
-				else if (navigator.clipboard) { navigator.clipboard.writeText(url).then(function () { flash(btnShare); }, function () {}); }
-			});
-		}
-
 		return { open: open };
 	}
 
@@ -434,6 +426,5 @@
 		el.addEventListener('animationend', h);
 		window.setTimeout(h, 700);
 	}
-	function flash(el) { el.classList.add('is-on'); window.setTimeout(function () { el.classList.remove('is-on'); }, 900); }
 	function cssEsc(s) { return (window.CSS && CSS.escape) ? CSS.escape(s) : String(s).replace(/["\\]/g, '\\$&'); }
 })();

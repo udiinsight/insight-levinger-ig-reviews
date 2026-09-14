@@ -181,6 +181,7 @@ class LIR_Query {
 			$proc_list[] = array(
 				'name' => html_entity_decode( get_the_title( $proc ), ENT_QUOTES, 'UTF-8' ),
 				'slug' => $proc->post_name,
+				'url'  => (string) get_permalink( $proc ),
 				'icon' => (string) self::field( 'feed_icon', $proc->ID ),
 			);
 		}

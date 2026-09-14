@@ -394,7 +394,12 @@
 	gap: 10px;
 	padding: 16px;
 	color: #fff;
+	z-index: 3;
+	/* empty space in the bar passes clicks through to the video */
+	pointer-events: none;
 }
+.lir__reel-top > * { pointer-events: auto; }
+
 .lir__reel-pill {
 	padding: 5px 12px;
 	font-size: 12.5px;
@@ -403,8 +408,23 @@
 	background: rgba(255, 255, 255, .16);
 	backdrop-filter: blur(6px);
 	-webkit-backdrop-filter: blur(6px);
+	transition: background .2s;
 }
 .lir__reel-id { display: flex; align-items: center; gap: 9px; }
+
+/* Both chips link out — the procedure to its page, the doctor to theirs. JS drops
+   the href when a post has no URL, so affordances are keyed to [href] and an
+   inert <a> stays plain text. */
+.lir__reel-pill,
+.lir__reel-id { text-decoration: none; color: inherit; }
+.lir__reel-pill[href],
+.lir__reel-id[href] { cursor: pointer; }
+.lir__reel-pill[href]:hover { background: rgba(255, 255, 255, .32); }
+.lir__reel-id[href]:hover .lir__reel-doc { text-decoration: underline; text-underline-offset: 2px; }
+.lir__reel-id[href]:hover .lir__reel-avatar { border-color: #fff; transform: scale(1.05); }
+.lir__reel-avatar { transition: border-color .2s, transform .2s var(--lir-ease); }
+.lir__reel-pill[href]:focus-visible,
+.lir__reel-id[href]:focus-visible { outline: 2px solid #fff; outline-offset: 3px; border-radius: 999px; }
 .lir__reel-avatar {
 	width: 36px;
 	height: 36px;
@@ -418,33 +438,6 @@
 .lir__reel-idtext { display: flex; flex-direction: column; line-height: 1.25; }
 .lir__reel-doc { font-size: 14.5px; font-weight: 700; }
 .lir__reel-role { font-size: 11px; opacity: .8; }
-
-.lir__reel-actions {
-	position: absolute;
-	inset-inline-end: 14px;
-	bottom: 168px;
-	display: flex;
-	flex-direction: column;
-	gap: 16px;
-	z-index: 3;
-}
-.lir__act {
-	display: grid;
-	place-items: center;
-	width: 44px;
-	height: 44px;
-	color: #fff;
-	border: 0;
-	border-radius: 999px;
-	background: rgba(255, 255, 255, .14);
-	backdrop-filter: blur(6px);
-	-webkit-backdrop-filter: blur(6px);
-	cursor: pointer;
-	transition: transform .2s var(--lir-ease), background .2s;
-}
-.lir__act:hover { transform: scale(1.08); background: rgba(255, 255, 255, .24); }
-.lir__act svg { width: 22px; height: 22px; }
-.lir__act.is-on { color: var(--lir-accent); background: #fff; }
 
 .lir__reel-play {
 	position: absolute;
@@ -589,7 +582,6 @@ body.lir-lock { overflow: hidden; }
 	.lir__doctor { align-self: flex-start; }
 	.lir__count { margin-bottom: 16px; }
 	.lir__lb-arrow { width: 42px; height: 42px; }
-	.lir__reel-actions { bottom: 150px; }
 }
 @media (max-width: 420px) {
 	.lir__name { font-size: 14.5px; }

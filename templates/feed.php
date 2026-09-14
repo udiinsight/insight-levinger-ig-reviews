@@ -125,21 +125,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<video class="lir__video" playsinline preload="metadata"></video>
 				<span class="lir__reel-scrim" aria-hidden="true"></span>
 
+				<?php /* Both identity chips link out; JS drops the href when a post has no URL. */ ?>
 				<div class="lir__reel-top">
-					<span class="lir__reel-pill" data-lir-lb-proc></span>
-					<div class="lir__reel-id">
+					<a class="lir__reel-pill" data-lir-lb-proc></a>
+					<a class="lir__reel-id" data-lir-lb-doclink>
 						<span class="lir__reel-avatar" data-lir-lb-avatar aria-hidden="true"></span>
 						<span class="lir__reel-idtext">
 							<span class="lir__reel-doc" data-lir-lb-doc></span>
 							<span class="lir__reel-role">הרופא/ה המטפל/ת</span>
 						</span>
-					</div>
-				</div>
-
-				<div class="lir__reel-actions">
-					<button class="lir__act" type="button" data-lir-like aria-pressed="false" aria-label="אהבתי"><?php echo lir_icon( 'heart' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></button>
-					<button class="lir__act" type="button" data-lir-share aria-label="שיתוף"><?php echo lir_icon( 'share' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></button>
-					<button class="lir__act" type="button" data-lir-save aria-pressed="false" aria-label="שמירה"><?php echo lir_icon( 'bookmark' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></button>
+					</a>
 				</div>
 
 				<button class="lir__reel-play" type="button" data-lir-toggle aria-label="נגן או השהה">

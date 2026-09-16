@@ -19,7 +19,7 @@ class LIR_Assets {
 	public static function register() {
 		wp_register_style(
 			'lir-fonts',
-			'https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Frank+Ruhl+Libre:wght@500;700&display=swap',
+			'https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap',
 			array(),
 			LIR_VERSION
 		);

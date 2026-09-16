@@ -4,7 +4,7 @@ Tags: reviews, testimonials, instagram, video, rtl
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.6.1
+Stable tag: 0.6.2
 License: GPLv2 or later
 
 Instagram-style video reviews feed for Dr. Levinger.
@@ -49,6 +49,10 @@ Polylang translations share a slug, so a slug lookup prefers the Hebrew post. Sc
 something that matches nothing shows the empty state rather than the whole feed.
 
 == Changelog ==
+
+= 0.6.2 =
+* Dropped Frank Ruhl Libre from the enqueued Google Fonts request. Headings use
+  Assistant, the family the feed already used for body text, differentiated by weight.
 
 = 0.6.1 =
 * The Instagram caption is shown under the video, clamped to two lines with an
